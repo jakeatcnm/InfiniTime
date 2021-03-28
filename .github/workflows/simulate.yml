@@ -45,6 +45,7 @@ jobs:
       id:   cache-emsdk
       uses: actions/cache@v2
       env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
         cache-name: cache-emsdk
       with:
         path: /tmp/emsdk
@@ -52,6 +53,8 @@ jobs:
         restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
 
     - name: Install emscripten
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       if:   steps.cache-emsdk.outputs.cache-hit != 'true'  # Install emscripten if not found in cache
       run:  |
         # Based on https://emscripten.org/docs/getting_started/downloads.html
@@ -80,6 +83,7 @@ jobs:
       id:   cache-wabt
       uses: actions/cache@v2
       env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
         cache-name: cache-wabt
       with:
         path: /tmp/wabt
@@ -87,6 +91,8 @@ jobs:
         restore-keys: ${{ runner.os }}-build-${{ env.cache-name }}
 
     - name: Install wabt
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'      
       if:   steps.cache-wabt.outputs.cache-hit != 'true'  # Install wabt if not found in cache
       run:  |
         cd /tmp
@@ -98,11 +104,15 @@ jobs:
         cmake --build .
 
     - name: Checkout LVGL for WebAssembly
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       run:  |
         cd /tmp
         git clone https://github.com/AppKaki/lvgl-wasm
         
     - name: Copy Watch Face Clock.cpp to LVGL for WebAssembly
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       run:  |
         cp src/DisplayApp/Screens/Clock.cpp /tmp/lvgl-wasm/clock
 
@@ -117,9 +127,13 @@ jobs:
         wasm/lvgl.sh
 
     - name: Show files
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       run:  set ; pwd ; ls -l /tmp/lvgl-wasm
 
     - name: Copy WebAssembly to GitHub Pages
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       run:  |
         if [ ! -d docs ]; then
           mkdir docs
@@ -137,6 +151,9 @@ jobs:
           docs
 
     - name: Commit GitHub Pages
+    
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       uses: EndBug/add-and-commit@v4.4.0
       with:
         # Arguments for the git add command
@@ -162,6 +179,8 @@ jobs:
 
     - name: Upload Outputs
       uses: actions/upload-artifact@v2
+      env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
       with:
         name: wasm
         path: |
